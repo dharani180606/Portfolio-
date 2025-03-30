@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dharanisri N - Computer Science Student</title>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- jsPDF library for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-image: url('https://images.unsplash.com/photo-1497366754035-f200968a6e72?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.88);
+            z-index: -1;
+        }
+        
+        .profile-container {
+            max-width: 900px;
+            margin: 30px auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(3px);
+            box-shadow: 0 10px 30px rgba(0, 119, 182, 0.2);
+            padding: 40px;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .profile-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #0077b6, #00b4d8);
+        }
+        
+        .header {
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .profile-pic {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid rgba(0, 180, 216, 0.2);
+            margin-right: 30px;
+            box-shadow: 0 5px 20px rgba(0, 119, 182, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-pic:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(0, 119, 182, 0.3);
+        }
+        
+        .header-text {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .header h1 {
+            font-size: 38px;
+            font-weight: 700;
+            color: #0077b6;
+            margin-bottom: 5px;
+        }
+        
+        .header h2 {
+            font-size: 24px;
+            font-weight: 400;
+            color: #00b4d8;
+            margin-bottom: 20px;
+        }
+        
+        .profile-info {
+            margin-bottom: 30px;
+            color: #555;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            background-color: rgba(33, 146, 211, 0.7);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 119, 182, 0.15);
+        }
+        
+        .section-title {
+            font-size: 26px;
+            font-weight: 600;
+            color: #e2e7e3;
+            margin-bottom: 25px;
+            position: relative;
+            padding-left: 20px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 15px;
+            color: #30c213;
+        }
+        
+        .section-title::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 5px;
+            height: 25px;
+            width: 5px;
+            background: #52e65a;
+            border-radius: 3px;
+        }
+        
+        .skill-item {
+            margin-bottom: 20px;
+        }
+        
+        .skill-name {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #c05d1b;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background-color: rgba(0, 180, 216, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-level {
+            height: 100%;
+            background: linear-gradient(90deg, #7218bb, #1c1fda);
+            border-radius: 6px;
+            width: 0;
+            box-shadow: 0 2px 10px rgba(0, 119, 182, 0.2);
+        }
+        
+        .education-item, .activity-item {
+            margin-bottom: 30px;
+            padding-left: 20px;
+            border-left: 3px solid rgba(0, 180, 216, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .education-item:hover, .activity-item:hover {
+            border-left-color: #16b5d470;
+        }
+        
+        .education-title, .activity-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #0077b6;
+            margin-bottom: 8px;
+        }
+        
+        .education-place, .activity-type {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        .education-period {
+            color: #d65d16;
+            margin-bottom: 12px;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .education-period i {
+            margin-right: 10px;
+        }
+        
+        .education-description {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .skills-list {
+            list-style-type: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .skills-list li {
+            padding: 10px 20px;
+            background-color: rgba(0, 180, 216, 0.1);
+            border-radius: 25px;
+            color: #0077b6;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .skills-list li:hover {
+            background-color: rgb(49, 226, 49);
+            transform: translateY(-3px);
+        }
+        
+        .contact-list {
+            list-style-type: none;
+        }
+        
+        .contact-list li {
+            padding: 12px 0;
+            display: flex;
+            align-items: center;
+            color: #555;
+            border-bottom: 1px dashed rgba(0, 119, 182, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .contact-list li:hover {
+            color: #0077b6;
+        }
+        
+        .contact-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .contact-list li i {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 180, 216, 0.1);
+            color: #0077b6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .contact-list li:hover i {
+            background: #0077b6;
+            color: white;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #00b4d8;
+            font-size: 15px;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .social-links a {
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 180, 216, 0.1);
+            color: #0077b6;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 18px;
+        }
+        
+        .social-links a:hover {
+            background: #0077b6;
+            color: white;
+            transform: translateY(-5px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 119, 182, 0.3);
+        }
+        
+        .interest-list {
+            list-style-type: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .interest-list li {
+            padding: 10px 20px;
+            background-color: rgba(0, 180, 216, 0.1);
+            border-radius: 25px;
+            color: #0077b6;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .interest-list li:hover {
+            background-color: rgba(82, 199, 223, 0.87);
+            transform: translateY(-3px);
+        }
+        
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(90deg, #0077b6, #00b4d8);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 4px 15px rgba(0, 119, 182, 0.3);
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 119, 182, 0.4);
+        }
+        
+        .download-btn i {
+            margin-right: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-pic {
+                margin-right: 0;
+                margin-bottom: 25px;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+            
+            .section-title {
+                font-size: 22px;
+                padding-left: 15px;
+            }
+            
+            .section-title::before {
+                height: 20px;
+                top: 3px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="profile-container" id="resume-content">
+        <div class="header">
+            <img src="img/Dharanisri.jpg" alt="Dharanisri's Profile Picture" class="profile-pic">
+            <div class="header-text">
+                <h1>DHARANI SRI</h1>
+                <h2>Computer Science Student</h2>
+                
+                <div class="profile-info">
+                    <p>Seeking a challenging and innovative position in a firm that will maximize the opportunity for me to implement my skills and knowledge, while allowing me to use my capabilities in the best way possible to enrich my skills and contribute to the development of the organization I work with.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Section -->
+        <div class="section">
+            <h2 class="section-title"><i class="fas fa-envelope"></i> Contact Information</h2>
+            <ul class="contact-list">
+                <li><i class="fas fa-phone"></i> 87548 51232</li>
+                <li><i class="fas fa-envelope"></i> <a href="mailto:sabaridharanisri@gmail.com">sabaridharanisri@gmail.com</a></li>
+                <li><i class="fas fa-map-marker-alt"></i> 149, Hospital Street, E. Cheetipalayam, Erode</li>
+            </ul>
+        </div>
+        
+        <!-- Education Section -->
+        <div class="section">
+            <h2 class="section-title"><i class="fas fa-graduation-cap"></i> Education</h2>
+            
+            <div class="education-item">
+                <h3 class="education-title">Bachelor of Science in Computer Science</h3>
+                <p class="education-place">KPR College of Arts Science and Research</p>
+                <p class="education-period"><i class="fas fa-calendar-alt"></i> Currently Pursuing</p>
+            </div>
+            
+            <div class="education-item">
+                <h3 class="education-title">Higher Secondary Education</h3>
+                <p class="education-place">Komarasamy Gounder Matric Higher Secondary School</p>
+                <p class="education-period"><i class="fas fa-calendar-alt"></i> Graduated with 62%</p>
+            </div>
+        </div>
+        
+        <!-- Technical Skills Section -->
+        <div class="section">
+            <h2 class="section-title"><i class="fas fa-code"></i> Technical Skills</h2>
+            <ul class="skills-list">
+                <li>C Programming</li>
+                <li>C++</li>
+                <li>Java</li>
+            </ul>
+        </div>
+        
+        <!-- Personal Skills Section -->
+        <div class="section">
+            <h2 class="section-title"><i class="fas fa-user"></i> Personal Skills</h2>
+            <ul class="skills-list">
+                <li>Time Management</li>
+                <li>Editing</li>
+                <li>Self-Motivation</li>
+            </ul>
+        </div>
+        
+        <!-- Certificates Section -->
+        <div class="section">
+            <h2 class="section-title"><i class="fas fa-certificate"></i> Certificates</h2>
+            <div class="education-item">
+                <h3 class="education-title">Java Programming</h3>
+                <p class="education-place">Great Learning</p>
+            </div>
+        </div>
+        
+        <!-- Languages Section -->
+        <div class="section">
+            <h2 class="section-title"><i class="fas fa-language"></i> Languages</h2>
+            <ul class="skills-list">
+                <li>Tamil</li>
+                <li>English</li>
+            </ul>
+        </div>
+        
+        <!-- Area of Interest Section -->
+        <div class="section">
+            <h2 class="section-title"><i class="fas fa-heart"></i> Area of Interest</h2>
+            <ul class="interest-list">
+                <li>Software Development</li>
+                <li>Design</li>
+            </ul>
+        </div>
+        
+        <div class="social-links">
+            <a href="#"><i class="fab fa-linkedin-in"></i></a>
+            <a href="#"><i class="fab fa-github"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+        
+
+        <!-- Download Button Section -->
+        <div style="text-align: center; margin-top: 40px;">
+            <button class="download-btn" id="downloadPdf">
+                <!-- <i class="fas fa-download"></i> Download CV/Resume -->
+                <a href="img/Dharanisri-resume.pdf" download="Dharanisri.pdf" class="download-btn">
+                    <i class="fas fa-download"></i> Download Resume
+                </a>
+                
+            </button>
+        </div>
+        
+        <div class="footer">
+            <p>Copyrights &copy; 2025 Dharanisri's Portfolio</p>
+        </div>
+    </div>
+    
+    <script>document.addEventListener('DOMContentLoaded', function() {
+        // Ensure jsPDF is loaded properly
+        const jsPDF = window.jspdf.jsPDF;
+    
+        document.getElementById('downloadPdf').addEventListener('click', function() {
+            const element = document.getElementById('resume-content');
+            
+            if (!element) {
+                alert("Resume content not found!");
+                return;
+            }
+    
+            html2canvas(element, {
+                scale: 2, // Higher quality
+                useCORS: true,
+            }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgWidth = 210; // A4 width in mm
+                const pageHeight = 297; // A4 height in mm
+                const imgHeight = canvas.height * imgWidth / canvas.width;
+                let heightLeft = imgHeight;
+                let position = 0;
+                
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+    
+                while (heightLeft > 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                
+                // Save PDF
+                pdf.save("DHARANISRI-RESUME.pdf");
+            });
+        });
+    });
+    </script>
+</body>
+</html>
